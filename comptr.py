@@ -19,7 +19,10 @@ def calculate_descriminant(coeffs):
                 .format((- coeffs[1] - math.sqrt(d)) / (2 * coeffs[2])).rstrip('0').rstrip('.')
         result += "\n{0:.6f}".format((- coeffs[1] + math.sqrt(d)) / (2 * coeffs[2])).rstrip('0').rstrip('.')
     else:
-        result = "Discriminant not positive"
+        common_part = "{0:.6f}".format(-coeffs[1]/(2 * coeffs[2])).rstrip('0').rstrip('.')
+        root1 = common_part + " + i * {0:.6f}".format(math.sqrt(d * -1) / (2 * coeffs[2])).rstrip('0').rstrip('.')
+        root2 = common_part + " - i * {0:.6f}".format(math.sqrt(d * -1) / (2 * coeffs[2])).rstrip('0').rstrip('.')
+        result = f"Discriminant is strictly lower than 0. This means there are two complex numbers as solutions:\n{root1}\n{root2}"
     print(result)
 
 
@@ -60,6 +63,9 @@ def reduced_form(coeffs):
 
 def get_tuple(equation_part):
     res = re.findall(r'(-*\d+|-*\d+\.\d+)\*[Xx]\^(\d+\.*\d*)', equation_part)
+    print(res)
+    x_power_one_coefs = re.findall(r'', equation_part)
+    print(x_power_one_coefs)
     for indx, t in enumerate(res):
         res[indx] = tuple(float(x) for x in t)
     return res
