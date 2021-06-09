@@ -1,6 +1,5 @@
 import sys
 import re
-import math
 from itertools import groupby
 
 
@@ -16,12 +15,12 @@ def calculate_descriminant(coeffs):
         result = f"Discriminant is equals zero, the only solution is:\n{result}"
     elif d > 0:
         result = "Discriminant is strictly positive, the two solutions are:\n{0:.6f}"\
-                .format((- coeffs[1] - math.sqrt(d)) / (2 * coeffs[2])).rstrip('0').rstrip('.')
-        result += "\n{0:.6f}".format((- coeffs[1] + math.sqrt(d)) / (2 * coeffs[2])).rstrip('0').rstrip('.')
+                .format((- coeffs[1] - d**0.5) / (2 * coeffs[2])).rstrip('0').rstrip('.')
+        result += "\n{0:.6f}".format((- coeffs[1] + d**0.5) / (2 * coeffs[2])).rstrip('0').rstrip('.')
     else:
         common_part = "{0:.6f}".format(-coeffs[1]/(2 * coeffs[2])).rstrip('0').rstrip('.')
-        root1 = common_part + " + i * {0:.6f}".format(math.sqrt(d * -1) / (2 * coeffs[2])).rstrip('0').rstrip('.')
-        root2 = common_part + " - i * {0:.6f}".format(math.sqrt(d * -1) / (2 * coeffs[2])).rstrip('0').rstrip('.')
+        root1 = common_part + " + i * {0:.6f}".format((-d**0.5) / (2 * coeffs[2])).rstrip('0').rstrip('.')
+        root2 = common_part + " - i * {0:.6f}".format((-d**0.5) / (2 * coeffs[2])).rstrip('0').rstrip('.')
         result = f"Discriminant is strictly lower than 0. This means there are two complex numbers as solutions:\n{root1}\n{root2}"
     print(result)
 
@@ -50,7 +49,7 @@ def reduced_form(coeffs):
                 return
             continue
         if num > 0:
-            num = "+ " + "{}".format(coeffs[i])
+            num = "+ " + f"{coeffs[i]:g}"
         elif num < 0:
             num = "- " + "{}".format(coeffs[i] * -1)
         res += "{} * X^{} ".format(num, f'{i:g}')
@@ -63,9 +62,6 @@ def reduced_form(coeffs):
 
 def get_tuple(equation_part):
     res = re.findall(r'(-*\d+|-*\d+\.\d+)\*[Xx]\^(\d+\.*\d*)', equation_part)
-    print(res)
-    x_power_one_coefs = re.findall(r'', equation_part)
-    print(x_power_one_coefs)
     for indx, t in enumerate(res):
         res[indx] = tuple(float(x) for x in t)
     return res
@@ -92,6 +88,7 @@ if __name__ == '__main__':
     equation = sys.argv[1]
     equation = equation.replace(" ", "")
     lhs = equation.split("=")[0]
+    lhs += '\0'
     rhs = equation.split("=")[1]
 
     if len(equation.split("=")) != 2:
@@ -107,12 +104,10 @@ if __name__ == '__main__':
 
     reduced_form(dictionary)
     polynomial_degree = get_polynomial_degree(dictionary.keys())
-
-
     if polynomial_degree == 1:
         calculate_first_polinom(dictionary)
     elif polynomial_degree == 0:
-        print("Error")
+        print(f"Error, equation can not be solved: {dictionary[0]:g} != 0")
     else:
         calculate_descriminant(dictionary)
 
